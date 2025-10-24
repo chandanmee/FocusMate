@@ -1,4 +1,4 @@
-#FocusMate is an AI-powered productivity application 
+# FocusMate is an AI-powered productivity application 
 
 FocusMate is an AI-powered productivity application based on the Pomodoro technique, designed to help users stay focused, manage tasks efficiently, and optimize their work experience. It combines smart timers, activity tracking, and AI-generated insights to improve daily productivity.”
 
