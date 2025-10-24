@@ -288,14 +288,22 @@ const Dashboard = () => {
                     <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-4 overflow-hidden">
                       <div
                         className="bg-gradient-to-r from-purple-500 to-blue-500 h-4 rounded-full transition-all duration-1000 ease-out"
-                        style={{ width: `${productivityScore}%` }}
+                        style={{ width: `${dailySummary.score || productivityScore}%` }}
                       ></div>
                     </div>
                     <span className="font-bold text-2xl bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                      {productivityScore}%
+                      {dailySummary.score || productivityScore}%
                     </span>
                   </div>
                 </div>
+
+                {/* Trend Analysis */}
+                {dailySummary.trendAnalysis && (
+                  <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/20 dark:border-gray-700/20">
+                    <h3 className="font-bold text-gray-800 dark:text-white mb-4 text-lg">📈 Trend Analysis</h3>
+                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-sm">{dailySummary.trendAnalysis}</p>
+                  </div>
+                )}
               </div>
 
               {/* Achievements & Insights */}
@@ -337,6 +345,31 @@ const Dashboard = () => {
                 </div>
               </div>
             </div>
+
+            {/* Detailed Analysis Section */}
+            {dailySummary.detailedAnalysis && (
+              <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/20 dark:border-gray-700/20">
+                  <h3 className="font-bold text-gray-800 dark:text-white mb-4 text-lg">🎯 Focus Quality</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">{dailySummary.detailedAnalysis.focusQuality}</p>
+                </div>
+                
+                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/20 dark:border-gray-700/20">
+                  <h3 className="font-bold text-gray-800 dark:text-white mb-4 text-lg">📋 Task Strategy</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">{dailySummary.detailedAnalysis.taskStrategy}</p>
+                </div>
+                
+                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/20 dark:border-gray-700/20">
+                  <h3 className="font-bold text-gray-800 dark:text-white mb-4 text-lg">🚫 Distraction Impact</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">{dailySummary.detailedAnalysis.distractionImpact}</p>
+                </div>
+                
+                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/20 dark:border-gray-700/20">
+                  <h3 className="font-bold text-gray-800 dark:text-white mb-4 text-lg">⏰ Time Optimization</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">{dailySummary.detailedAnalysis.timeOptimization}</p>
+                </div>
+              </div>
+            )}
 
             <div className="mt-6 text-xs text-gray-500 dark:text-gray-400 text-center bg-white/30 dark:bg-gray-800/30 rounded-lg p-3">
               Generated at {new Date(dailySummary.generatedAt).toLocaleTimeString()}
