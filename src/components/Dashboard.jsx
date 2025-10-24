@@ -394,41 +394,47 @@ const Dashboard = () => {
               {/* Recent Sessions */}
               {todaySessions.slice(-3).map(session => (
                 <div key={session.id} className="group bg-gradient-to-r from-blue-50/80 to-blue-100/80 dark:from-blue-900/20 dark:to-blue-800/20 backdrop-blur-sm rounded-xl p-4 border border-blue-200/30 dark:border-blue-700/30 hover:shadow-lg transition-all duration-300">
-                  <div className="flex items-center space-x-4">
-                    <div className="bg-blue-500/20 p-2 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                  <div className="flex items-start space-x-3 sm:space-x-4">
+                    <div className="bg-blue-500/20 p-2 rounded-lg group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
                       <Clock className="text-blue-600 dark:text-blue-400" size={20} />
                     </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold text-gray-800 dark:text-white">
-                        {session.type === 'focus' ? '🎯 Focus Session' : '☕ Break'} 
-                        {session.taskId && ` - ${tasks.find(t => t.id === session.taskId)?.title}`}
-                      </p>
-                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                        {session.type === 'focus' && session.status === 'completed' ? (
-                          <>
-                            Duration: {Math.round((session.actualDuration || session.duration * 60) / 60)} minutes
-                            <span className="mx-2">•</span>
-                            {new Date(session.startTime).toLocaleTimeString()} - {new Date(session.endTime).toLocaleTimeString()}
-                          </>
-                        ) : session.status === 'active' ? (
-                          <>
-                            In Progress - Started at {new Date(session.startTime).toLocaleTimeString()}
-                          </>
-                        ) : (
-                          <>
-                            {new Date(session.startTime).toLocaleTimeString()} - 
-                            {session.endTime ? new Date(session.endTime).toLocaleTimeString() : 'In Progress'}
-                          </>
-                        )}
-                      </p>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-gray-800 dark:text-white truncate">
+                            {session.type === 'focus' ? '🎯 Focus Session' : '☕ Break'} 
+                            {session.taskId && ` - ${tasks.find(t => t.id === session.taskId)?.title}`}
+                          </p>
+                          <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                            {session.type === 'focus' && session.status === 'completed' ? (
+                              <>
+                                Duration: {Math.round((session.actualDuration || session.duration * 60) / 60)} minutes
+                                <span className="mx-2 hidden sm:inline">•</span>
+                                <span className="block sm:inline">
+                                  {new Date(session.startTime).toLocaleTimeString()} - {new Date(session.endTime).toLocaleTimeString()}
+                                </span>
+                              </>
+                            ) : session.status === 'active' ? (
+                              <>
+                                In Progress - Started at {new Date(session.startTime).toLocaleTimeString()}
+                              </>
+                            ) : (
+                              <>
+                                {new Date(session.startTime).toLocaleTimeString()} - 
+                                {session.endTime ? new Date(session.endTime).toLocaleTimeString() : 'In Progress'}
+                              </>
+                            )}
+                          </p>
+                        </div>
+                        <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap flex-shrink-0 flex items-center justify-center ${
+                          session.status === 'completed' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
+                          session.status === 'active' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' :
+                          'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
+                        }`}>
+                          {session.status}
+                        </span>
+                      </div>
                     </div>
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      session.status === 'completed' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
-                      session.status === 'active' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' :
-                      'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
-                    }`}>
-                      {session.status}
-                    </span>
                   </div>
                 </div>
               ))}
@@ -436,19 +442,23 @@ const Dashboard = () => {
               {/* Recent Completed Tasks */}
               {todayTasks.slice(-3).map(task => (
                 <div key={task.id} className="group bg-gradient-to-r from-green-50/80 to-green-100/80 dark:from-green-900/20 dark:to-green-800/20 backdrop-blur-sm rounded-xl p-4 border border-green-200/30 dark:border-green-700/30 hover:shadow-lg transition-all duration-300">
-                  <div className="flex items-center space-x-4">
-                    <div className="bg-green-500/20 p-2 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                  <div className="flex items-start space-x-3 sm:space-x-4">
+                    <div className="bg-green-500/20 p-2 rounded-lg group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
                       <Target className="text-green-600 dark:text-green-400" size={20} />
                     </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold text-gray-800 dark:text-white">✅ {task.title}</p>
-                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                        Completed at {new Date(task.completedAt).toLocaleTimeString()}
-                      </p>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-gray-800 dark:text-white truncate">✅ {task.title}</p>
+                          <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                            Completed at {new Date(task.completedAt).toLocaleTimeString()}
+                          </p>
+                        </div>
+                        <span className="px-2 sm:px-3 py-1 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 rounded-full text-xs font-semibold whitespace-nowrap flex-shrink-0 flex items-center justify-center">
+                          Completed
+                        </span>
+                      </div>
                     </div>
-                    <span className="px-3 py-1 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 rounded-full text-xs font-semibold">
-                      Completed
-                    </span>
                   </div>
                 </div>
               ))}
