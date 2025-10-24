@@ -1,148 +1,160 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, Timer as TimerIcon, CheckSquare, Lightbulb, Settings as SettingsIcon } from 'lucide-react';
-import { AppProvider, useApp } from './contexts/AppContext';
-import { ToastProvider } from './contexts/ToastContext';
+import { Settings, Sun, Moon } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import Timer from './components/Timer';
 import TaskList from './components/TaskList';
 import FocusSuggestions from './components/FocusSuggestions';
-import Settings from './components/Settings';
+import SettingsPage from './components/Settings';
+import { AppProvider, useApp } from './contexts/AppContext';
+import { ToastProvider } from './contexts/ToastContext';
+
+// Import logo images
+import focusmateIcon from './assets/focusmate.png';
+import focusmateIconLt from './assets/focusmate-lt.png';
+import focusmateSmallIcon from './assets/focumate_icon.png';
 
 // Inner App component that has access to context
 const AppContent = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [selectedTaskId, setSelectedTaskId] = useState(null);
-  const { state } = useApp();
+  const { state, dispatch } = useApp();
   const { settings, timer } = state;
+  const theme = settings?.theme || 'light';
 
-  // Apply theme to document
   useEffect(() => {
-    const applyTheme = (theme) => {
-      if (theme === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else if (theme === 'light') {
-        document.documentElement.classList.remove('dark');
-      } else if (theme === 'auto') {
-        // Auto theme based on system preference
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        if (prefersDark) {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
-      }
-    };
-
-    applyTheme(settings.theme);
-
-    // Listen for system theme changes when in auto mode
-    if (settings.theme === 'auto') {
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      const handleChange = (e) => {
-        if (e.matches) {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
-      };
-      
-      mediaQuery.addEventListener('change', handleChange);
-      return () => mediaQuery.removeEventListener('change', handleChange);
+    const root = window.document.documentElement;
+    
+    if (theme === 'dark') {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
     }
-  }, [settings.theme]);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    dispatch({
+      type: 'UPDATE_SETTINGS',
+      payload: { theme: newTheme }
+    });
+  };
 
   const handleStartFocusSession = (taskId) => {
     setSelectedTaskId(taskId);
     setActiveTab('timer');
   };
 
-  const tabs = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'timer', label: 'Timer', icon: TimerIcon },
-    { id: 'tasks', label: 'Tasks', icon: CheckSquare },
-    { id: 'suggestions', label: 'Focus Tips', icon: Lightbulb },
-    { id: 'settings', label: 'Settings', icon: SettingsIcon },
-  ];
-
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
-        return <Dashboard />;
+        return <Dashboard onStartFocusSession={handleStartFocusSession} />;
       case 'timer':
-        return <Timer taskId={selectedTaskId} sessionType="focus" />;
+        return <Timer selectedTaskId={selectedTaskId} />;
       case 'tasks':
-        return <TaskList onStartFocusSession={handleStartFocusSession} />;
+        return <TaskList onSelectTask={setSelectedTaskId} />;
       case 'suggestions':
         return <FocusSuggestions />;
       case 'settings':
-        return <Settings />;
+        return <SettingsPage />;
       default:
-        return <Dashboard />;
+        return <Dashboard onStartFocusSession={handleStartFocusSession} />;
     }
-  };
-
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-200">
       {/* Header */}
-      <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 transition-colors duration-200">
+      <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2 cursor-pointer hover:opacity-80 transition-opacity duration-200" onClick={() => setActiveTab('dashboard')}>
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">FM</span>
+          <div className="flex justify-between items-center h-16">
+            {/* Logo and Title */}
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <div className="flex items-center cursor-pointer hover:opacity-80 transition-opacity duration-200" onClick={() => setActiveTab('dashboard')}>
+                {/* Responsive logo - small icon on mobile, main logo on larger screens */}
+                <img 
+                  src={focusmateSmallIcon} 
+                  alt="FocusMate Logo" 
+                  className="w-10 h-10 rounded-lg sm:hidden"
+                />
+                <div className="hidden sm:block">
+                  <img 
+                     src={theme === 'dark' ? focusmateIconLt : focusmateIcon} 
+                     alt="FocusMate Logo" 
+                     className="w-auto h-10 rounded-lg"
+                   />
                 </div>
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white">FocusMate</h1>
               </div>
-              
-              {/* Background Timer Indicator */}
-              {timer.isRunning && (
-                <div className="flex items-center space-x-2 bg-blue-100 dark:bg-blue-900 px-3 py-1 rounded-full">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
-                    {formatTime(timer.timeLeft)} - {timer.sessionType}
-                  </span>
-                </div>
-              )}
             </div>
-            
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              AI-Powered Productivity Dashboard
+
+            {/* Navigation and Controls */}
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              {/* Desktop Navigation */}
+              <nav className="hidden md:flex space-x-1">
+                {[
+                  { id: 'dashboard', label: 'Dashboard' },
+                  { id: 'timer', label: 'Timer' },
+                  { id: 'tasks', label: 'Tasks' }
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
+                      activeTab === tab.id
+                        ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
+                        : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </nav>
+
+              {/* Mobile Navigation Dropdown */}
+              <div className="md:hidden">
+                <select
+                  value={activeTab}
+                  onChange={(e) => setActiveTab(e.target.value)}
+                  className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="dashboard">Dashboard</option>
+                  <option value="timer">Timer</option>
+                  <option value="tasks">Tasks</option>
+                </select>
+              </div>
+
+              {/* Theme Toggle Button */}
+              <button
+                onClick={toggleTheme}
+                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
+                aria-label="Toggle theme"
+              >
+                {theme === 'dark' ? (
+                  <Sun className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500" />
+                ) : (
+                  <Moon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+                )}
+              </button>
+
+              {/* Settings Button */}
+              <button
+                onClick={() => setActiveTab('settings')}
+                className={`p-2 rounded-lg transition-colors duration-200 ${
+                  activeTab === 'settings'
+                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
+                    : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300'
+                }`}
+                aria-label="Settings"
+              >
+                <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
+              </button>
+
+              <div className="text-sm text-gray-600 dark:text-gray-400 hidden lg:block">
+                AI-Powered Productivity Dashboard
+              </div>
             </div>
           </div>
         </div>
       </header>
-
-      {/* Navigation */}
-      <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 transition-colors duration-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-8 overflow-x-auto">
-            {tabs.map((tab) => {
-              const Icon = tab.icon;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors duration-200 ${
-                    activeTab === tab.id
-                      ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
-                  }`}
-                >
-                  <Icon size={18} />
-                  <span>{tab.label}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </nav>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -161,7 +173,7 @@ const AppContent = () => {
   );
 };
 
-// Main App component with Provider
+// Main App component with providers
 function App() {
   return (
     <AppProvider>
