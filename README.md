@@ -1,6 +1,15 @@
-# React + Tailwind CSS Boilerplate
+#FocusMate is an AI-powered productivity application 
 
-A modern React application boilerplate with Tailwind CSS for rapid UI development.
+FocusMate is an AI-powered productivity application based on the Pomodoro technique, designed to help users stay focused, manage tasks efficiently, and optimize their work experience. It combines smart timers, activity tracking, and AI-generated insights to improve daily productivity.”
+
+Key Features / Modules
+•	Pomodoro Timer: Customizable work/break intervals to enhance focus.
+•	AI-Powered Summaries & Insights: Generates daily summaries of tasks and provides focus recommendations.
+•	Activity Tracking: Tracks completed tasks and Pomodoro sessions.
+•	Notifications: Toast and sound alerts for timer events, task reminders, and errors.
+•	Theme Switching: Supports dark/light mode for optimal work experience.
+•	Task Management: Create, update, and prioritize tasks seamlessly.
+
 
 ## 🚀 Technologies Used
 
